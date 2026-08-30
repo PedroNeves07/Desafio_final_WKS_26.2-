@@ -1,0 +1,16 @@
+id_consulta,id_paciente,id_medico,nome_especialidade,nome_convenio,data_consulta,dias_antecedencia,idade_paciente,historico_faltas,valor_consulta,status_consulta,no_show
+1,1,1,Cardiologia,Particular,2026-01-10,8,37,0,300.0,Realizada,0
+2,2,2,Dermatologia,Unimed JP,2026-01-12,9,30,0,200.0,Realizada,0
+3,3,3,Pediatria,Hapvida,2026-01-15,14,53,0,154.0,No-Show,1
+4,4,4,Ortopedia,Unimed JP,2026-01-18,13,25,0,224.0,Realizada,0
+5,5,5,Ginecologia,Bradesco Saude,2026-01-20,12,60,0,221.0,Realizada,0
+6,6,6,Endocrinologia,Particular,2026-01-22,20,33,0,290.0,No-Show,1
+7,7,7,Neurologia,Amil Saude,2026-01-25,15,42,0,297.5,Realizada,0
+9,9,9,Psiquiatria,SulAmerica,2026-02-05,16,67,0,288.0,Realizada,0
+10,10,10,Gastroenterologia,Unimed JP,2026-02-10,19,20,0,216.0,Realizada,0
+11,11,11,Otorrinolaringologia,Cassi,2026-02-12,18,35,0,172.5,No-Show,1
+12,12,12,Urologia,Particular,2026-02-15,14,44,0,280.0,Realizada,0
+13,13,13,Nutrição,Geap,2026-02-18,16,46,0,135.0,Realizada,0
+14,14,14,Fisioterapia,Bradesco Saude,2026-02-20,15,28,0,127.5,Realizada,0
+15,15,15,Clinica Geral,Unimed JP,2026-02-22,14,65,0,160.0,Realizada,0
+16,6,15,Clinica Geral,Particular,2026-02-24,23,33,1,200.0,Realizada,0
