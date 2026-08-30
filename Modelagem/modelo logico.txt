@@ -1,0 +1,140 @@
+===================================================================
+CLÍNICA CARE - MODELO LÓGICO RELACIONAL COMPLETO (3FN)
+===================================================================
+
+1. TABELAS, ATRIBUTOS E CHAVES
+
+1.1 TABELA: convenios
+   - id_convenio INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - nome_convenio VARCHAR(100) NOT NULL
+   - registro_ans VARCHAR(20) NOT NULL UNIQUE
+   - tipo_cobertura VARCHAR(50) NOT NULL
+   - telefone_contato VARCHAR(20) NOT NULL
+   - email_contato VARCHAR(100) NOT NULL
+   - percentual_desconto DECIMAL(5,2) DEFAULT 0.00
+   - status_ativo BOOLEAN DEFAULT TRUE
+
+1.2 TABELA: pacientes
+   - id_paciente INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - id_convenio INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. convenios(id_convenio)
+   - nome_completo VARCHAR(120) NOT NULL
+   - cpf VARCHAR(14) NOT NULL UNIQUE
+   - data_nascimento DATE NOT NULL
+   - genero CHAR(1) NOT NULL CHECK (genero IN ('M', 'F', 'O'))
+   - telefone VARCHAR(20) NOT NULL
+   - email VARCHAR(100) NOT NULL
+   - endereco_completo VARCHAR(255) NOT NULL
+   - data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+1.3 TABELA: especialidades
+   - id_especialidade INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - nome_especialidade VARCHAR(80) NOT NULL UNIQUE
+   - descricao TEXT NOT NULL
+   - valor_base_consulta DECIMAL(10,2) NOT NULL
+   - tempo_medio_minutos INT NOT NULL
+   - retorno_dias_limite INT DEFAULT 30
+   - necessita_preparacao BOOLEAN DEFAULT FALSE
+   - status_ativa BOOLEAN DEFAULT TRUE
+
+1.4 TABELA: medicos
+   - id_medico INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - nome_completo VARCHAR(120) NOT NULL
+   - crm VARCHAR(20) NOT NULL UNIQUE
+   - uf_crm CHAR(2) NOT NULL
+   - telefone VARCHAR(20) NOT NULL
+   - email VARCHAR(100) NOT NULL
+   - data_admissao DATE NOT NULL
+   - status_ativo BOOLEAN DEFAULT TRUE
+
+1.5 TABELA: medico_especialidades (Tabela Associativa N:N)
+   - id_medico_especialidade INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - id_medico INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. medicos(id_medico)
+   - id_especialidade INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. especialidades(id_especialidade)
+   - data_vinculo DATE NOT NULL
+   - RQE VARCHAR(20) UNIQUE
+   - atende_convenio BOOLEAN DEFAULT TRUE
+   - valor_consulta_medico DECIMAL(10,2) NOT NULL
+   - status_vinculo BOOLEAN DEFAULT TRUE
+
+1.6 TABELA: consultas
+   - id_consulta INT AUTO_INCREMENT
+      TIPO DE CHAVE: Primary Key (PK)
+   - id_paciente INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. pacientes(id_paciente)
+   - id_medico INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. medicos(id_medico)
+   - id_especialidade INT NOT NULL
+      TIPO DE CHAVE: Foreign Key (FK) -> Ref. especialidades(id_especialidade)
+   - data_agendamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   - data_consulta DATE NOT NULL
+   - horario_consulta TIME NOT NULL
+   - status_consulta VARCHAR(20) NOT NULL CHECK (status_consulta IN ('Agendada', 'Realizada', 'Cancelada', 'No-Show'))
+   - valor_consulta DECIMAL(10,2) NOT NULL
+
+1.7 TABELA: prontuarios
+   - id_prontuario INT AUTO_INCREMENT
+     * TIPO DE CHAVE: Primary Key (PK)
+   - id_consulta INT NOT NULL UNIQUE
+     * TIPO DE CHAVE: Foreign Key (FK) -> Ref. consultas(id_consulta)
+   - id_paciente INT NOT NULL
+     * TIPO DE CHAVE: Foreign Key (FK) -> Ref. pacientes(id_paciente)
+   - id_medico INT NOT NULL
+     * TIPO DE CHAVE: Foreign Key (FK) -> Ref. medicos(id_medico)
+   - queixa_principal TEXT NOT NULL
+   - diagnostico TEXT NOT NULL
+   - historico_clinico TEXT
+   - observacoes_medicas TEXT
+   - data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+1.8 TABELA: pagamentos
+   - id_pagamento INT AUTO_INCREMENT
+     * TIPO DE CHAVE: Primary Key (PK)
+   - id_consulta INT NOT NULL UNIQUE
+     * TIPO DE CHAVE: Foreign Key (FK) -> Ref. consultas(id_consulta)
+   - id_paciente INT NOT NULL
+     * TIPO DE CHAVE: Foreign Key (FK) -> Ref. pacientes(id_paciente)
+   - valor_pago DECIMAL(10,2) NOT NULL
+   - data_pagamento DATETIME
+   - metodo_pagamento VARCHAR(30) NOT NULL CHECK (metodo_pagamento IN ('Dinheiro', 'Cartao_Credito', 'Cartao_Debito', 'Pix', 'Convenio'))
+   - status_pagamento VARCHAR(20) NOT NULL CHECK (status_pagamento IN ('Pago', 'Pendente', 'Cancelado'))
+   - numero_recibo VARCHAR(50) UNIQUE
+
+===================================================================
+2. MAPEAMENTO DE RELACIONAMENTOS E CARDINALIDADES
+===================================================================
+
+- ENTIDADES: convenios (1,1) <--- oferece ---> (0,N) pacientes
+   Regra: Um convênio pode ter 0 ou N pacientes. Um paciente possui 1 e apenas 1 convênio.
+   Implementação: FK id_convenio na tabela pacientes.
+
+- ENTIDADES: pacientes (1,1) <--- agenda ---> (0,N) consultas
+   Regra: Um paciente pode ter 0 ou N consultas. Uma consulta pertence a 1 e apenas 1 paciente.
+   Implementação: FK id_paciente na tabela consultas.
+
+- ENTIDADES: medicos (1,1) <--- vincula ---> (1,N) medico_especialidades
+   Regra: Um médico possui 1 ou N especialidades.
+   Implementação: FK id_medico na tabela associativa medico_especialidades.
+
+- ENTIDADES: especialidades (1,1) <--- pertence ---> (0,N) medico_especialidades
+   Regra: Uma especialidade pode estar associada a 0 ou N médicos.
+   Implementação: FK id_especialidade na tabela associativa medico_especialidades.
+
+- ENTIDADES: medicos (1,1) <--- realiza ---> (0,N) consultas
+   Regra: Um médico pode realizar 0 ou N consultas. Uma consulta é realizada por 1 e apenas 1 médico.
+   Implementação: FK id_medico na tabela consultas.
+
+- ENTIDADES: consultas (1,1) <--- gera ---> (0,1) prontuarios
+   Regra: Uma consulta gera no máximo 1 prontuário. Um prontuário refere-se a 1 e apenas 1 consulta.
+   Implementação: FK id_consulta UNIQUE na tabela prontuarios.
+
+- ENTIDADES: consultas (1,1) <--- fatora ---> (0,1) pagamentos
+   Regra: Uma consulta gera no máximo 1 registro de pagamento. Um pagamento refere-se a 1 e apenas 1 consulta.
+   Implementação: FK id_consulta UNIQUE na tabela pagamentos.
