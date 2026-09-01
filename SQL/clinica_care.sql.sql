@@ -424,7 +424,6 @@ INNER JOIN medicos m ON c.id_medico = m.id_medico
 INNER JOIN especialidades e ON c.id_especialidade = e.id_especialidade
 WHERE c.status_consulta = 'Realizada'
 GROUP BY m.id_medico, m.nome_completo, e.nome_especialidade;
-
 -- Query 8: Auditoria de Inadimplência e Pendências Financeiras (LEFT JOIN)
 SELECT
     p.nome_completo AS paciente,
